@@ -18,7 +18,7 @@ const Download =()=>{
 
         try {
 
-          const upload =  await fetch('https://localhost:3000/upload-url',{
+          const upload =  await fetch('http://localhost:3000/upload-url',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json'
