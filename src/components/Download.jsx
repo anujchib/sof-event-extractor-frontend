@@ -4,6 +4,8 @@ import { Await, useLocation } from "react-router-dom";
 
 const Download =()=>{
 
+    
+
     const location =  useLocation();
     const data = location.state;
     const fileList = data?.selectedFiles;
@@ -85,4 +87,5 @@ const UploadResponse = await upload.json();
       </div>
     );
 
-}
+} 
+export default Download;
