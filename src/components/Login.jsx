@@ -19,7 +19,7 @@ const Login = () => {
     <div className="min-h-screen flex justify-center items-center bg-white">
       <div className="w-full max-w-sm bg-white rounded-xl p-6">
         <div className="font-serif font-bold text-green-700 text-2xl ml-0">
-          Pdf-ToolKit&reg;
+          Sof-event-extractor&reg;
         </div>
 
         <div className="font-bold font-serif mt-2 mb-2 text-xl text-green-700">
@@ -33,10 +33,7 @@ const Login = () => {
           </a>
         </div>
 
-        <div className="mb-4">
-          <label>Email:</label>
-          <input className="input" type="email" />
-        </div>
+
 
         <div className="mb-4">
           <label>Password</label>
