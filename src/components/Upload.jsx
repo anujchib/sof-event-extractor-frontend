@@ -29,7 +29,7 @@ const Upload = () => {
     processFiles(selectedFile);
   }
 
-  // Prevent default drag behaviors on document
+
   useEffect(() => {
     const preventDefault = (e) => {
       e.preventDefault();
@@ -82,7 +82,7 @@ const Upload = () => {
 
   return (
     <div className='bg-gray-50 min-h-screen'>
-      {/* Header */}
+     
       <div className='border-b bg-white'>
         <div className='max-w-4xl mx-auto px-6 py-4'>
           <h1 className='text-2xl font-semibold text-gray-900'>File Upload</h1>
@@ -90,12 +90,12 @@ const Upload = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      
       <div className='max-w-4xl mx-auto px-6 py-12'>
         <div className='bg-white rounded-lg shadow-sm border'>
           <div className='p-8'>
             
-            {/* Drop Zone */}
+           
             <div 
               ref={dropZoneRef}
               className={`
@@ -139,7 +139,7 @@ const Upload = () => {
           </div>
         </div>
 
-        {/* Warnings */}
+       
         <div className='mt-8 space-y-4'>
           <div className='bg-amber-50 border border-amber-200 rounded-md p-4'>
             <div className='flex'>
@@ -173,7 +173,7 @@ const Upload = () => {
         </div>
       </div>
 
-      {/* Hidden file input */}
+
       <input
         className="hidden"
         type="file"
