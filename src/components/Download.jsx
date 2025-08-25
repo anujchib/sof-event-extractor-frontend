@@ -9,7 +9,7 @@ const Download = () => {
 
   const [downloadUrl, setDownloadUrl] = useState(null);
 
- 
+
   useEffect(() => {
     if (!file) return;
 
@@ -52,17 +52,14 @@ const Download = () => {
     uploadFile();
   }, [file]);
 
-
   const originalName = file?.name || "";
-
   const baseName =
     originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
-
   const safeBaseName = baseName.replace(/\s+/g, "_");
-
   const extractedName = `${safeBaseName}_extracted-events.json`;
 
   console.log("Expected extracted file name:", extractedName);
+
 
   useEffect(() => {
     if (!file) return;
@@ -80,13 +77,15 @@ const Download = () => {
         });
 
         const downloadResponse = await res.json();
-        const { ready, downloadURL } = downloadResponse;
-
         console.log("Server returned signed URL:", downloadResponse);
 
-        if (ready && downloadURL) {
-          setDownloadUrl(downloadURL);
-          console.log("✅ State updated with signed URL:", downloadURL);
+      
+        const { downloadURL } = downloadResponse;
+        const { ready, downloadURL: signedUrl } = downloadURL || {};
+
+        if (ready && signedUrl) {
+          setDownloadUrl(signedUrl);
+          console.log("✅ State updated with signed URL:", signedUrl);
         } else {
           retryTimeout = setTimeout(checkDownload, 3000);
         }
@@ -100,7 +99,6 @@ const Download = () => {
 
     return () => clearTimeout(retryTimeout);
   }, [file, extractedName]);
-
 
   return (
     <div className="flex flex-col justify-center items-center h-dvh">
