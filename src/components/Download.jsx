@@ -50,10 +50,17 @@ const Download = () => {
     uploadFile();
   }, [file]);
 
-  const originalName = file?.name || "";
-  const baseName =
-    originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
-  const extractedName = `${baseName}_extracted-events.json`;
+const originalName = file?.name || "";
+
+// take file name without extension
+const baseName = originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
+
+// sanitize to avoid spaces or weird characters in S3 key
+const safeBaseName = baseName.replace(/\s+/g, "_"); 
+
+// final extracted name
+const extractedName = `${safeBaseName}_extracted-events.json`;
+
 
 
   console.log(extractedName);
