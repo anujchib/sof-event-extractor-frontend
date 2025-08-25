@@ -120,15 +120,16 @@ const Download = () => {
               onClick={() => handleDownload(downloadUrl, extractedName)}
               className="border border-black py-2 px-10 rounded-4xl m-4"
             >
-              Download JSON
+             JSON ⚠️  visit console of chrome to get access⚠️ 
             </button>
+            
           )}
           {CSVdownloadUrl && (
             <button
               onClick={() => handleDownload(CSVdownloadUrl, CSVextractedName)}
               className="border border-black py-2 px-10 rounded-4xl m-4"
             >
-              Download CSV
+             CSV  ⚠️  visit console of chrome to get access⚠️ 
             </button>
           )}
         </div>
