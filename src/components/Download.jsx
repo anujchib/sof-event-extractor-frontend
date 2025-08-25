@@ -6,7 +6,7 @@ const Download = () => {
   const data = location.state;
   const fileList = data?.selectedFiles;
   const file = fileList?.[0];
-  const [downloadURL, setDownloadURL] = useState(null);
+  const [downloadLINK, setDownloadLINK] = useState(null);
 
   useEffect(() => {
     if (!file) return;
@@ -86,7 +86,7 @@ const extractedName = `${safeBaseName}_extracted-events.json`;
         console.log(downloadURL);
 
         if (ready) {
-          setDownloadURL(downloadURL);
+          setDownloadLINK(downloadURL);
         } else {
           retryTimeout = setTimeout(checkDownload, 3000);
         }
@@ -107,10 +107,10 @@ const extractedName = `${safeBaseName}_extracted-events.json`;
         <h1 className="text-center text-9xl">🧑‍🍳</h1>
       </div>
 
-      {downloadURL ? (
+      {downloadLINK ? (
         <div className="flex">
           <button
-            onClick={() => window.open(downloadURL)}
+            onClick={() => window.open(downloadLINK)}
             className="border border-black py-2 px-10 rounded-4xl m-4"
           >
             Download
