@@ -67,11 +67,13 @@ const Download = () => {
         const download = await fetch("http://localhost:3000/download-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ extractedName }),
+          body: JSON.stringify({ fileName: `extracted-text/${extractedName}` }),
         });
 
         const downloadResponse = await download.json();
         const { ready, downloadURL } = downloadResponse;
+
+        console.log(downloadURL);
 
         if (ready) {
           setDownloadURL(downloadURL);
