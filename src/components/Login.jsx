@@ -7,7 +7,7 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      navigate("/upload", { replace: true });
+      navigate("/Upload", { replace: true });
     }
   }, [navigate]);
 
