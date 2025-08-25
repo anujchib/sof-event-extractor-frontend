@@ -82,7 +82,7 @@ const Download = () => {
         const downloadResponse = await res.json();
         const { ready, downloadURL } = downloadResponse;
 
-        console.log("Server returned signed URL:", downloadURL);
+        console.log("Server returned signed URL:", downloadResponse);
 
         if (ready && downloadURL) {
           setDownloadUrl(downloadURL);
