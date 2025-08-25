@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const navigate = useNavigate();
 
+  // 🔑 If already logged in, redirect to /Upload
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
@@ -11,68 +12,26 @@ const Login = () => {
     }
   }, [navigate]);
 
-  const HandleClick = () => {
-    navigate("/Home"); 
-  };
-
   return (
-    <div className="min-h-screen flex justify-center items-center bg-white">
-      <div className="w-full max-w-sm bg-white rounded-xl p-6">
-        <div className="font-serif font-bold text-green-700 text-2xl ml-0">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-white px-6">
+      <div className="text-center max-w-md">
+        <h1 className="font-serif font-bold text-green-700 text-3xl mb-4">
           Sof-event-extractor&reg;
-        </div>
+        </h1>
 
-        <div className="font-bold font-serif mt-2 mb-2 text-xl text-green-700">
-          Log in to your account
-        </div>
+        {/* Cute note for users */}
+        <p className="text-gray-600 mb-8 font-medium">
+          Hey there 👋 I’m a student and this app costs money to run.
+          Please don’t use it heavily, or it’ll exhaust my credits 🙏
+        </p>
 
-        <div className="text-center flex">
-          <p className="font-semibold">Don't have an account?</p>
-          <a className="text-blue-600 mb-2 ml-2 font-semibold" href="">
-            Sign up
-          </a>
-        </div>
-
-
-
-        <div className="mb-4">
-          <label>Password</label>
-          <input className="input" type="password" />
-        </div>
-
-        <div className="flex justify-center">
-          <button
-            onClick={HandleClick}
-            className="px-16 py-5 border rounded-full text-center hover:bg-black hover:text-white"
-          >
-            Login
-          </button>
-        </div>
-
-        <div className="text-center my-4">
-          <h1>OR</h1>
-        </div>
-
-        <div className="my-6">
-          <a
-            className="border border-black px-10 py-2"
-            href="https://mastering-auth-production-c0d1.up.railway.app/api/v1/user/auth/google"
-          >
-            Login with Google
-          </a>
-        </div>
-
-        <div className="my-6">
-          <a className="border border-black px-10 py-2" href="http://www.github.com">
-            Login with Github
-          </a>
-        </div>
-
-        <div className="mb-2 text-center">
-          <a className="underline text-blue-600 font-normal" href="">
-            forgot password
-          </a>
-        </div>
+        {/* Google login button */}
+        <a
+          className="px-8 py-3 rounded-lg bg-green-600 text-white font-semibold shadow hover:bg-green-700 transition"
+          href="https://mastering-auth-production-c0d1.up.railway.app/api/v1/user/auth/google"
+        >
+          Login with Google
+        </a>
       </div>
     </div>
   );
