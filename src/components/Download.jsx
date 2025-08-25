@@ -6,8 +6,10 @@ const Download = () => {
   const data = location.state;
   const fileList = data?.selectedFiles;
   const file = fileList?.[0];
-  const [downloadLINK, setDownloadLINK] = useState(null);
 
+  const [downloadUrl, setDownloadUrl] = useState(null);
+
+ 
   useEffect(() => {
     if (!file) return;
 
@@ -50,20 +52,17 @@ const Download = () => {
     uploadFile();
   }, [file]);
 
-const originalName = file?.name || "";
 
-// take file name without extension
-const baseName = originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
+  const originalName = file?.name || "";
 
-// sanitize to avoid spaces or weird characters in S3 key
-const safeBaseName = baseName.replace(/\s+/g, "_"); 
+  const baseName =
+    originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
 
-// final extracted name
-const extractedName = `${safeBaseName}_extracted-events.json`;
+  const safeBaseName = baseName.replace(/\s+/g, "_");
 
+  const extractedName = `${safeBaseName}_extracted-events.json`;
 
-
-  console.log(extractedName);
+  console.log("Expected extracted file name:", extractedName);
 
   useEffect(() => {
     if (!file) return;
@@ -74,19 +73,20 @@ const extractedName = `${safeBaseName}_extracted-events.json`;
       console.log("Fetching Download Content...");
 
       try {
-        const download = await fetch("http://localhost:3000/download-url", {
+        const res = await fetch("http://localhost:3000/download-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileName: `extracted-text/${extractedName}` }),
         });
 
-        const downloadResponse = await download.json();
+        const downloadResponse = await res.json();
         const { ready, downloadURL } = downloadResponse;
 
-        console.log(downloadURL);
+        console.log("Server returned signed URL:", downloadURL);
 
-        if (ready) {
-          setDownloadLINK(downloadURL);
+        if (ready && downloadURL) {
+          setDownloadUrl(downloadURL);
+          console.log("✅ State updated with signed URL:", downloadURL);
         } else {
           retryTimeout = setTimeout(checkDownload, 3000);
         }
@@ -101,16 +101,17 @@ const extractedName = `${safeBaseName}_extracted-events.json`;
     return () => clearTimeout(retryTimeout);
   }, [file, extractedName]);
 
+
   return (
     <div className="flex flex-col justify-center items-center h-dvh">
       <div className="mx-auto">
         <h1 className="text-center text-9xl">🧑‍🍳</h1>
       </div>
 
-      {downloadLINK ? (
+      {downloadUrl ? (
         <div className="flex">
           <button
-            onClick={() => window.open(downloadLINK)}
+            onClick={() => window.open(downloadUrl)}
             className="border border-black py-2 px-10 rounded-4xl m-4"
           >
             Download
