@@ -114,13 +114,14 @@ const Download = () => {
         <h1 className="text-center text-9xl">🧑‍🍳</h1>
       </div>
       {(downloadUrl || CSVdownloadUrl) ? (
+        
         <div className="flex">
           {downloadUrl && (
             <button
               onClick={() => handleDownload(downloadUrl, extractedName)}
               className="border border-black py-2 px-10 rounded-4xl m-4"
             >
-             JSON ⚠️  visit console of chrome to get access⚠️ 
+              Download JSON 
             </button>
             
           )}
@@ -129,7 +130,7 @@ const Download = () => {
               onClick={() => handleDownload(CSVdownloadUrl, CSVextractedName)}
               className="border border-black py-2 px-10 rounded-4xl m-4"
             >
-             CSV  ⚠️  visit console of chrome to get access⚠️ 
+              CSV    
             </button>
           )}
         </div>
