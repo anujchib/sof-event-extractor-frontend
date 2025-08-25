@@ -68,6 +68,7 @@ const Download = () => {
         const { downloadURL } = downloadResponse;
         const { ready, downloadURL: signedUrl } = downloadURL || {};
         if (ready && signedUrl) {
+             console.log("✅ Signed JSON URL:", signedUrl); 
           setDownloadUrl(signedUrl);
         } else {
           retryTimeout = setTimeout(checkDownload, 3000);
@@ -94,6 +95,7 @@ const Download = () => {
         const { downloadURL } = downloadResponse;
         const { ready, downloadURL: signedUrl } = downloadURL || {};
         if (ready && signedUrl) {
+             console.log("✅ Signed CSV URL:", signedUrl); // <--- log it here
           CSVsetDownloadUrl(signedUrl);
         } else {
           retryTimeout = setTimeout(checkDownload, 3000);
