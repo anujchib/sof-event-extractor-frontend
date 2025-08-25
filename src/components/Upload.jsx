@@ -40,7 +40,6 @@ const Upload = () => {
       preventDefault(e);
     };
 
-    // Add event listeners to document to prevent default behavior
     document.addEventListener('dragenter', preventDefault);
     document.addEventListener('dragover', preventDefault);
     document.addEventListener('drop', handleDocumentDrop);
@@ -52,7 +51,6 @@ const Upload = () => {
     };
   }, []);
 
-  // Drag and drop handlers for drop zone
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -63,7 +61,6 @@ const Upload = () => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Only set dragOver to false if we're leaving the drop zone entirely
     if (!dropZoneRef.current?.contains(e.relatedTarget)) {
       setIsDragOver(false);
     }
@@ -84,78 +81,93 @@ const Upload = () => {
   };
 
   return (
-    <div className='bg-gradient-to-br from-green-800 to-green-900 flex flex-col min-h-screen text-white'>
-      {/* Header Warning */}
-      <div className='w-full flex items-center justify-center border-2 border-yellow-400 border-dashed bg-yellow-900/20 py-6 m-4 rounded-lg'>
-        <h1 className='text-lg font-semibold text-yellow-200 text-center px-4'>
-          ⚠️ This page is for Testing only - a separate UI is in production ⚠️
-        </h1>
+    <div className='bg-gray-50 min-h-screen'>
+      {/* Header */}
+      <div className='border-b bg-white'>
+        <div className='max-w-4xl mx-auto px-6 py-4'>
+          <h1 className='text-2xl font-semibold text-gray-900'>File Upload</h1>
+          <p className='text-sm text-gray-600 mt-1'>Upload your files to get started</p>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className='flex-1 flex items-center justify-center p-4'>
-        <div className='flex flex-col lg:flex-row justify-center items-stretch w-full max-w-6xl gap-6'>
-          
-          {/* Drag and Drop Zone */}
-          <div 
-            ref={dropZoneRef}
-            className={`
-              relative flex-1 min-h-[300px] flex flex-col justify-center items-center 
-              border-3 border-dashed rounded-2xl p-8 transition-all duration-300 ease-in-out
-              cursor-pointer hover:scale-[1.02] transform
-              ${isDragOver 
-                ? 'border-blue-400 bg-blue-900/30 shadow-2xl shadow-blue-500/20 scale-[1.02]' 
-                : 'border-white/50 bg-white/5 hover:border-white/70 hover:bg-white/10'
-              }
-            `}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onClick={handleClick}
-          >
-            <div className='text-center'>
-              <div className='text-6xl mb-4'>
-                {isDragOver ? '🎯' : '📁'}
-              </div>
-              <h2 className='text-2xl font-bold mb-3'>
-                {isDragOver ? 'Drop files here!' : 'Drag & Drop Files'}
-              </h2>
-              <p className='text-lg text-white/70 mb-4'>
-                {isDragOver ? 'Release to upload' : 'or click to browse files'}
-              </p>
-              <div className='text-sm text-white/50'>
-                Support for multiple files
-              </div>
-            </div>
+      <div className='max-w-4xl mx-auto px-6 py-12'>
+        <div className='bg-white rounded-lg shadow-sm border'>
+          <div className='p-8'>
             
-            {/* Animated border effect */}
-            {isDragOver && (
-              <div className='absolute inset-0 border-3 border-blue-400 rounded-2xl animate-pulse'></div>
-            )}
-          </div>
+            {/* Drop Zone */}
+            <div 
+              ref={dropZoneRef}
+              className={`
+                relative border-2 border-dashed rounded-lg p-12 text-center transition-colors
+                ${isDragOver 
+                  ? 'border-blue-400 bg-blue-50' 
+                  : 'border-gray-300 hover:border-gray-400'
+                }
+              `}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
+              <div className='space-y-4'>
+                <div className='mx-auto w-12 h-12 text-gray-400'>
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" />
+                  </svg>
+                </div>
+                
+                <div>
+                  <h3 className='text-lg font-medium text-gray-900 mb-2'>
+                    {isDragOver ? 'Drop files here' : 'Drag and drop files here'}
+                  </h3>
+                  <p className='text-gray-600 mb-4'>or</p>
+                  <button 
+                    onClick={handleClick}
+                    className='inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                  >
+                    Browse files
+                  </button>
+                </div>
+                
+                <p className='text-xs text-gray-500'>
+                  Supports multiple file selection
+                </p>
+              </div>
+            </div>
 
-          {/* OR Divider */}
-          <div className='flex items-center justify-center lg:flex-col'>
-            <div className='bg-white/20 rounded-full px-4 py-2 text-sm font-medium'>
-              OR
+          </div>
+        </div>
+
+        {/* Warnings */}
+        <div className='mt-8 space-y-4'>
+          <div className='bg-amber-50 border border-amber-200 rounded-md p-4'>
+            <div className='flex'>
+              <div className='text-amber-400'>
+                <svg className='h-5 w-5' fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className='ml-3'>
+                <p className='text-sm text-amber-800'>
+                  This is a testing environment. Production UI is available separately.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Upload Button Section */}
-          <div className="flex flex-1 justify-center items-center min-h-[300px] border-2 border-white/30 border-dashed rounded-2xl bg-white/5">
-            <div className='text-center'>
-              <div className='text-4xl mb-4'>⬆️</div>
-              <h3 className='text-xl font-semibold mb-4'>Traditional Upload</h3>
-              <button 
-                onClick={handleClick}
-                className="px-8 py-4 bg-white text-green-800 font-semibold rounded-full 
-                         shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 
-                         transition-all duration-200 transform hover:bg-gray-100"
-                type="submit"
-              >
-                📂 Choose Files
-              </button>
+          <div className='bg-red-50 border border-red-200 rounded-md p-4'>
+            <div className='flex'>
+              <div className='text-red-400'>
+                <svg className='h-5 w-5' fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className='ml-3'>
+                <p className='text-sm text-red-800'>
+                  Please limit file size to under 10MB. File validation is not implemented yet.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -170,19 +182,11 @@ const Upload = () => {
         ref={fileInputReference}
         onChange={handleFileChange} 
       />
-
-      {/* Footer Warning */}
-      <div className='w-full flex justify-center border-2 border-red-400 border-dashed bg-red-900/20 py-4 m-4 rounded-lg'>
-        <p className='text-red-200 text-center px-4'>
-          ⚠️ Don't upload files larger than 10MB - No file validation implemented yet! ⚠️
-        </p>
-      </div>
     </div>
   )
 }
 
 export default Upload
-
 
 
 
