@@ -10,40 +10,62 @@ const Download = () => {
   const [downloadUrl, setDownloadUrl] = useState(null);
   const [CSVdownloadUrl, CSVsetDownloadUrl] = useState(null);
 
-  const handleDownload = (url, fileName) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+  const handleDownload = async (url, fileName) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch file");
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed ❌", error);
+    }
   };
 
   useEffect(() => {
     if (!file) return;
+
     const uploadFile = async () => {
       try {
         const upload = await fetch("http://localhost:3000/upload-url", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             fileName: file.name,
             fileType: file.type,
             fileSize: file.size,
           }),
         });
+
         if (!upload.ok) throw new Error("Failed to get upload URL");
+
         const { uploadURL } = await upload.json();
+
         const s3Upload = await fetch(uploadURL, {
           method: "PUT",
           headers: { "Content-Type": file.type },
           body: file,
         });
-        if (!s3Upload.ok) throw new Error("Upload failed");
+
+        if (s3Upload.ok) {
+          console.log("File uploaded successfully ✅");
+        }
       } catch (error) {
         console.error("Upload error ❌", error);
       }
     };
+
     uploadFile();
   }, [file]);
 
@@ -52,11 +74,11 @@ const Download = () => {
     originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
   const safeBaseName = baseName.replace(/\s+/g, "_");
   const extractedName = `${safeBaseName}_extracted-events.json`;
-  const CSVextractedName = `${safeBaseName}_extracted-events.csv`;
 
   useEffect(() => {
     if (!file) return;
     let retryTimeout;
+
     const checkDownload = async () => {
       try {
         const res = await fetch("http://localhost:3000/download-url", {
@@ -64,9 +86,11 @@ const Download = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileName: `extracted-text/${extractedName}` }),
         });
+
         const downloadResponse = await res.json();
         const { downloadURL } = downloadResponse;
         const { ready, downloadURL: signedUrl } = downloadURL || {};
+
         if (ready && signedUrl) {
           setDownloadUrl(signedUrl);
         } else {
@@ -76,13 +100,17 @@ const Download = () => {
         retryTimeout = setTimeout(checkDownload, 3000);
       }
     };
+
     checkDownload();
     return () => clearTimeout(retryTimeout);
   }, [file, extractedName]);
 
+  const CSVextractedName = `${safeBaseName}_extracted-events.csv`;
+
   useEffect(() => {
     if (!file) return;
     let retryTimeout;
+
     const checkDownload = async () => {
       try {
         const res = await fetch("http://localhost:3000/download-url", {
@@ -90,9 +118,11 @@ const Download = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileName: `extracted-text/${CSVextractedName}` }),
         });
+
         const downloadResponse = await res.json();
         const { downloadURL } = downloadResponse;
         const { ready, downloadURL: signedUrl } = downloadURL || {};
+
         if (ready && signedUrl) {
           CSVsetDownloadUrl(signedUrl);
         } else {
@@ -102,6 +132,7 @@ const Download = () => {
         retryTimeout = setTimeout(checkDownload, 3000);
       }
     };
+
     checkDownload();
     return () => clearTimeout(retryTimeout);
   }, [file, CSVextractedName]);
@@ -111,6 +142,7 @@ const Download = () => {
       <div className="mx-auto">
         <h1 className="text-center text-9xl">🧑‍🍳</h1>
       </div>
+
       {(downloadUrl || CSVdownloadUrl) ? (
         <div className="flex">
           {downloadUrl && (
@@ -121,6 +153,7 @@ const Download = () => {
               Download JSON
             </button>
           )}
+
           {CSVdownloadUrl && (
             <button
               onClick={() => handleDownload(CSVdownloadUrl, CSVextractedName)}
