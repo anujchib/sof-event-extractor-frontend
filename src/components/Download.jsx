@@ -8,6 +8,17 @@ const Download = () => {
   const file = fileList?.[0];
 
   const [downloadUrl, setDownloadUrl] = useState(null);
+  const [CSVdownloadUrl, CSVsetDownloadUrl] = useState(null);
+
+
+  const handleDownload = (url, fileName) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
 
 
   useEffect(() => {
@@ -52,22 +63,19 @@ const Download = () => {
     uploadFile();
   }, [file]);
 
+
   const originalName = file?.name || "";
   const baseName =
     originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
   const safeBaseName = baseName.replace(/\s+/g, "_");
   const extractedName = `${safeBaseName}_extracted-events.json`;
 
-  console.log("Expected extracted file name:", extractedName);
-
-
   useEffect(() => {
     if (!file) return;
-
     let retryTimeout;
 
     const checkDownload = async () => {
-      console.log("Fetching Download Content...");
+      console.log("Fetching Download Content... JSON");
 
       try {
         const res = await fetch("http://localhost:3000/download-url", {
@@ -77,28 +85,65 @@ const Download = () => {
         });
 
         const downloadResponse = await res.json();
-        console.log("Server returned signed URL:", downloadResponse);
+        console.log("Server returned signed URL JSON:", downloadResponse);
 
-      
         const { downloadURL } = downloadResponse;
         const { ready, downloadURL: signedUrl } = downloadURL || {};
 
         if (ready && signedUrl) {
           setDownloadUrl(signedUrl);
-          console.log("✅ State updated with signed URL:", signedUrl);
+          console.log("✅ State updated with signed URL JSON:", signedUrl);
         } else {
           retryTimeout = setTimeout(checkDownload, 3000);
         }
       } catch (error) {
-        console.error("Polling error ❌", error);
+        console.error("Polling error ❌ JSON", error);
         retryTimeout = setTimeout(checkDownload, 3000);
       }
     };
 
     checkDownload();
-
     return () => clearTimeout(retryTimeout);
   }, [file, extractedName]);
+
+
+  const CSVextractedName = `${safeBaseName}_extracted-events.csv`;
+
+  useEffect(() => {
+    if (!file) return;
+    let retryTimeout;
+
+    const checkDownload = async () => {
+      console.log("Fetching Download Content... CSV");
+
+      try {
+        const res = await fetch("http://localhost:3000/download-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: `extracted-text/${CSVextractedName}` }),
+        });
+
+        const downloadResponse = await res.json();
+        console.log("Server returned signed URL CSV:", downloadResponse);
+
+        const { downloadURL } = downloadResponse;
+        const { ready, downloadURL: signedUrl } = downloadURL || {};
+
+        if (ready && signedUrl) {
+          CSVsetDownloadUrl(signedUrl);
+          console.log("✅ State updated with signed URL CSV:", signedUrl);
+        } else {
+          retryTimeout = setTimeout(checkDownload, 3000);
+        }
+      } catch (error) {
+        console.error("Polling error ❌ CSV", error);
+        retryTimeout = setTimeout(checkDownload, 3000);
+      }
+    };
+
+    checkDownload();
+    return () => clearTimeout(retryTimeout);
+  }, [file, CSVextractedName]);
 
   return (
     <div className="flex flex-col justify-center items-center h-dvh">
@@ -106,14 +151,25 @@ const Download = () => {
         <h1 className="text-center text-9xl">🧑‍🍳</h1>
       </div>
 
-      {downloadUrl ? (
+      {(downloadUrl || CSVdownloadUrl) ? (
         <div className="flex">
-          <button
-            onClick={() => window.open(downloadUrl)}
-            className="border border-black py-2 px-10 rounded-4xl m-4"
-          >
-            Download
-          </button>
+          {downloadUrl && (
+            <button
+              onClick={() => handleDownload(downloadUrl, extractedName)}
+              className="border border-black py-2 px-10 rounded-4xl m-4"
+            >
+              Download JSON
+            </button>
+          )}
+
+          {CSVdownloadUrl && (
+            <button
+              onClick={() => handleDownload(CSVdownloadUrl, CSVextractedName)}
+              className="border border-black py-2 px-10 rounded-4xl m-4"
+            >
+              Download CSV
+            </button>
+          )}
         </div>
       ) : (
         <h1 className="m-10 font-bold text-xl">
