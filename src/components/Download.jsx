@@ -23,7 +23,7 @@ const Download = () => {
     if (!file) return;
     const uploadFile = async () => {
       try {
-        const upload = await fetch("http://localhost:3000/upload-url", {
+        const upload = await fetch("sof-event-extractor-backend-production.up.railway.app/upload-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -59,7 +59,7 @@ const Download = () => {
     let retryTimeout;
     const checkDownload = async () => {
       try {
-        const res = await fetch("http://localhost:3000/download-url", {
+        const res = await fetch("sof-event-extractor-backend-production.up.railway.app/download-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileName: `extracted-text/${extractedName}` }),
@@ -86,7 +86,7 @@ const Download = () => {
     let retryTimeout;
     const checkDownload = async () => {
       try {
-        const res = await fetch("http://localhost:3000/download-url", {
+        const res = await fetch("sof-event-extractor-backend-production.up.railway.app/download-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ fileName: `extracted-text/${CSVextractedName}` }),
