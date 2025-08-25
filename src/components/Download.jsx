@@ -55,6 +55,9 @@ const Download = () => {
     originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
   const extractedName = `${baseName}_extracted-events.json`;
 
+
+  console.log(extractedName);
+
   useEffect(() => {
     if (!file) return;
 
