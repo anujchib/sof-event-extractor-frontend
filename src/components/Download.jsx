@@ -53,7 +53,7 @@ const Download = () => {
   const originalName = file?.name || "";
   const baseName =
     originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
-  const extractedName = `${baseName}_extracted.json`;
+  const extractedName = `${baseName}_extracted-events.json`;
 
   useEffect(() => {
     if (!file) return;
