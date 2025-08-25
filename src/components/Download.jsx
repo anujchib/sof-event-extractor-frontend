@@ -1,14 +1,37 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Download = () => {
   const location = useLocation();
-  const data = location.state;
-  const fileList = data?.selectedFiles;
-  const file = fileList?.[0];
+  const navigate = useNavigate();
+  const storedFile = JSON.parse(localStorage.getItem("selectedFile"));
+  const fileFromState = location.state?.selectedFiles?.[0];
+  const file = fileFromState || storedFile;
 
   const [downloadUrl, setDownloadUrl] = useState(null);
-  const [csvDownloadUrl, setCsvDownloadUrl] = useState(null);
+  const [CSVdownloadUrl, CSVsetDownloadUrl] = useState(null);
+
+  useEffect(() => {
+    if (fileFromState) {
+      localStorage.setItem("selectedFile", JSON.stringify(fileFromState));
+    }
+  }, [fileFromState]);
+
+  if (!file) {
+    return (
+      <div className="flex flex-col justify-center items-center h-dvh">
+        <h1 className="text-center mt-20 text-xl font-bold">
+          No file selected. Please go back to upload page.
+        </h1>
+        <button
+          onClick={() => navigate("/")}
+          className="border border-black py-2 px-6 mt-4 rounded-2xl"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   const handleDownload = async (url, fileName) => {
     try {
@@ -31,86 +54,41 @@ const Download = () => {
     }
   };
 
-  // Upload original file
+  const originalName = file.name;
+  const baseName = originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
+  const safeBaseName = baseName.replace(/\s+/g, "_");
+  const extractedJsonName = `${safeBaseName}_extracted-events.json`;
+  const extractedCsvName = `${safeBaseName}_extracted-events.csv`;
+
   useEffect(() => {
     if (!file) return;
-
-    const uploadFile = async () => {
-      try {
-        const upload = await fetch("http://localhost:3000/upload-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fileName: file.name,
-            fileType: file.type,
-            fileSize: file.size,
-          }),
-        });
-
-        if (!upload.ok) throw new Error("Failed to get upload URL");
-        const { uploadURL } = await upload.json();
-
-        const s3Upload = await fetch(uploadURL, {
-          method: "PUT",
-          headers: { "Content-Type": file.type },
-          body: file,
-        });
-
-        if (s3Upload.ok) {
-          console.log("File uploaded successfully ✅");
-        }
-      } catch (error) {
-        console.error("Upload error ❌", error);
-      }
-    };
-
-    uploadFile();
-  }, [file]);
-
-  const originalName = file?.name || "";
-  const baseName =
-    originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
-  const safeBaseName = baseName.replace(/\s+/g, "_");
-
-  const jsonFileName = `${safeBaseName}_extracted-events.json`;
-  const csvFileName = `${safeBaseName}_extracted-events.csv`;
-
-  // Generic polling hook
-  const pollForDownload = (targetFileName, setter) => {
     let retryTimeout;
-    const checkDownload = async () => {
+
+    const fetchDownloadUrl = async (type) => {
+      const fileName = `extracted-text/${type === "json" ? extractedJsonName : extractedCsvName}`;
       try {
         const res = await fetch("http://localhost:3000/download-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: `extracted-text/${targetFileName}` }),
+          body: JSON.stringify({ fileName }),
         });
-
-        const downloadResponse = await res.json();
-        const { downloadURL } = downloadResponse;
+        const { downloadURL } = await res.json();
         const { ready, downloadURL: signedUrl } = downloadURL || {};
-
         if (ready && signedUrl) {
-          setter(signedUrl);
+          type === "json" ? setDownloadUrl(signedUrl) : CSVsetDownloadUrl(signedUrl);
         } else {
-          retryTimeout = setTimeout(checkDownload, 3000);
+          retryTimeout = setTimeout(() => fetchDownloadUrl(type), 3000);
         }
-      } catch (error) {
-        retryTimeout = setTimeout(checkDownload, 3000);
+      } catch {
+        retryTimeout = setTimeout(() => fetchDownloadUrl(type), 3000);
       }
     };
 
-    checkDownload();
+    fetchDownloadUrl("json");
+    fetchDownloadUrl("csv");
+
     return () => clearTimeout(retryTimeout);
-  };
-
-  useEffect(() => {
-    if (file) return pollForDownload(jsonFileName, setDownloadUrl);
-  }, [file, jsonFileName]);
-
-  useEffect(() => {
-    if (file) return pollForDownload(csvFileName, setCsvDownloadUrl);
-  }, [file, csvFileName]);
+  }, [file, extractedJsonName, extractedCsvName]);
 
   return (
     <div className="flex flex-col justify-center items-center h-dvh">
@@ -118,23 +96,22 @@ const Download = () => {
         <h1 className="text-center text-9xl">🧑‍🍳</h1>
       </div>
 
-      {downloadUrl || csvDownloadUrl ? (
+      {(downloadUrl || CSVdownloadUrl) ? (
         <div className="flex">
           {downloadUrl && (
             <button
-              onClick={() => handleDownload(downloadUrl, jsonFileName)}
+              onClick={() => handleDownload(downloadUrl, extractedJsonName)}
               className="border border-black py-2 px-10 rounded-4xl m-4"
             >
-              Download {jsonFileName}
+              Download JSON
             </button>
           )}
-
-          {csvDownloadUrl && (
+          {CSVdownloadUrl && (
             <button
-              onClick={() => handleDownload(csvDownloadUrl, csvFileName)}
+              onClick={() => handleDownload(CSVdownloadUrl, extractedCsvName)}
               className="border border-black py-2 px-10 rounded-4xl m-4"
             >
-              Download {csvFileName}
+              Download CSV
             </button>
           )}
         </div>
