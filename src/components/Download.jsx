@@ -134,7 +134,7 @@ const Download = () => {
         </div>
       ) : (
         <h1 className="m-10 font-bold text-xl">
-          Your file is cooking, download button will appear here soon!
+          Your file is cooking, download button will appear here soon! ⚠️  Please visit console in chrome  to get access to the files once the buttons appears Thanks !
         </h1>
       )}
     </div>

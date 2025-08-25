@@ -33,7 +33,7 @@ const Upload = () => {
 
     <div className=' bg-green-800 flex flex-col min-h-screen '>
           <div className=' w-full   flex items-center justify-center border border-white border-dashed  py-25 '>
-            <h1>header</h1>
+            <h1 className='text-xl'> ⚠️⚠️This page is for Testing only , a separate UI is in production ⚠️⚠️</h1>
         </div>
 
         
@@ -46,7 +46,7 @@ const Upload = () => {
 
         <div className=' flex justify-around w-full mx-4 gap-4 '>
             <div className='border border-white border-dotted w-full py-24 flex justify-center items-center '>
-    <h1>dropzone</h1>
+    <h1>⚠️Dropzone area⚠️ </h1>
             </div>
 
             
@@ -74,7 +74,7 @@ const Upload = () => {
       
     </div>
      <div className=' w-full  flex justify-center border border-white border-dashed  py-25 '>
-            <h1>Footer</h1>
+            <h1>⚠️ Dont pass any big files that will exhaust our paid credits. ⚠️   Test a file less than 10 mb , for now no file validations are there !  </h1>
         </div>
     </div>
   )
