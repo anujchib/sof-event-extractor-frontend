@@ -56,7 +56,7 @@ const Login = () => {
         <div className="my-6">
           <a
             className="border border-black px-10 py-2"
-            href="https://your-backend.com/api/v1/user/auth/google"
+            href="https://mastering-auth-production-c0d1.up.railway.app/api/v1/user/auth/google"
           >
             Login with Google
           </a>
