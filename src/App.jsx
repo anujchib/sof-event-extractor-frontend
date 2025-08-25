@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import React from 'react'
 import Download from "./components/Download";
 import Upload from "./components/Upload";
+import Login from "./components/Login";
 
 
 const App = () => {
@@ -15,7 +16,8 @@ const App = () => {
     <Routes>
 
 
-        <Route path="/" element={<Upload/>} />
+        <Route path="/" element={<Login/>} />
+          <Route path="/Upload" element={<Upload/>} />
 
         
         <Route path="/Download" element={<Download/>} /> 
