@@ -55,9 +55,6 @@ const Download = () => {
   const generatePossibleBaseNames = () => {
     const names = [];
     
-    // Add the known pattern from your example
-    names.push('etdtdudu');
-    
     // Original filename variations
     names.push(baseName);
     names.push(baseName.toLowerCase());
@@ -82,12 +79,18 @@ const Download = () => {
       names.push(words.slice(0, 2).join('').toLowerCase());
     }
     
-    // Common patterns that might be generated
-    names.push('statement_of_facts');
-    names.push('statementoffacts');
-    names.push('sof');
+    // For "STATEMENT OF FACTS" specifically, add common abbreviations
+    if (baseName.toLowerCase().includes('statement') && baseName.toLowerCase().includes('facts')) {
+      names.push('statement_of_facts');
+      names.push('statementoffacts');
+      names.push('sof');
+      names.push('statement_facts');
+    }
+    
+    // Generic fallbacks
     names.push('document');
     names.push('file');
+    names.push('uploaded_file');
     
     // Remove duplicates
     return [...new Set(names)];
@@ -250,8 +253,8 @@ const Download = () => {
           
           <div className="text-xs text-gray-500">
             <p className="mb-2">Looking for patterns like:</p>
-            <p className="font-mono break-all">etdtdudu_extracted-claude-maritime-data-[timestamp].json</p>
-            <p className="font-mono break-all">etdtdudu_extracted-claude-events-[timestamp].csv</p>
+            <p className="font-mono break-all">[filename]_extracted-claude-maritime-data-[timestamp].json</p>
+            <p className="font-mono break-all">[filename]_extracted-claude-events-[timestamp].csv</p>
             <p className="mt-2 text-gray-400">⚠️ Check console for detailed search progress</p>
           </div>
         </div>
@@ -260,4 +263,4 @@ const Download = () => {
   );
 };
 
-export default Downloa
+export default Download;
