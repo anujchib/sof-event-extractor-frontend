@@ -1,34 +1,4 @@
-// Generate many possible base names that the backend might use
-  const generatePossibleBaseNames = () => {
-    const names = [];
-    
-    // Original filename variations
-    names.push(baseName);
-    names.push(baseName.toLowerCase());
-    names.push(baseName.toUpperCase());
-    
-    // Remove special characters
-    names.push(baseName.replace(/[^a-zA-Z0-9]/g, ''));
-    names.push(baseName.replace(/[^a-zA-Z0-9]/g, '_'));
-    names.push(baseName.replace(/[^a-zA-Z0-9]/g, '-'));
-    
-    // Lowercase versions
-    names.push(baseName.toLowerCase().replace(/[^a-zA-Z0-9]/g, ''));
-    names.push(baseName.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_'));
-    names.push(baseName.toLowerCase().replace(/[^a-zA-Z0-9]/g, '-'));
-    
-    // Try first few words only
-    const words = baseName.split(/\s+/);
-    if (words.length > 1) {
-      names.push(words[0]);
-      names.push(words[0].toLowerCase());
-      names.push(words.slice(0, 2).join('_'));
-      names.push(words.slice(0, 2).join('').toLowerCase());
-    }
-    
-    // For "STATEMENT OF FACTS" specifically, add common abbreviations
-    if (baseName.toLowerCase().includes('statement') && baseName.toLowerCase().includes('facts')) {
-      names.push('statement_of_factsimport { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const Download = () => {
@@ -81,113 +51,40 @@ const Download = () => {
   const originalName = file?.name || "";
   const baseName = originalName.substring(0, originalName.lastIndexOf(".")) || originalName;
 
-  // Generate many possible base names that the backend might use
+  // Generate possible base names that the backend might use
   const generatePossibleBaseNames = () => {
-    const names = [];
-    
-    // Add the actual filename base first (most likely to work)
-    names.push(baseName);
-    names.push(baseName.toLowerCase());
-    names.push(baseName.toUpperCase());
-    
-    // Remove special characters
-    names.push(baseName.replace(/[^a-zA-Z0-9]/g, ''));
-    names.push(baseName.replace(/[^a-zA-Z0-9]/g, '_'));
-    names.push(baseName.replace(/[^a-zA-Z0-9]/g, '-'));
-    
-    // Lowercase versions
-    names.push(baseName.toLowerCase().replace(/[^a-zA-Z0-9]/g, ''));
-    names.push(baseName.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_'));
-    names.push(baseName.toLowerCase().replace(/[^a-zA-Z0-9]/g, '-'));
-    
-    // Try first few words only
-    const words = baseName.split(/\s+/);
-    if (words.length > 1) {
-      names.push(words[0]);
-      names.push(words[0].toLowerCase());
-      names.push(words.slice(0, 2).join('_'));
-      names.push(words.slice(0, 2).join('').toLowerCase());
-    }
-    
-    // Add known working examples for testing
-    if (baseName === 'adsfsfe123') {
-      names.unshift('adsfsfe123'); // Put this first as it's known to work
-    }
-    
-    // Generic fallbacks
-    names.push('document');
-    names.push('file');
-    names.push('uploaded_file');
-    
-    // Remove duplicates and return
-    return [...new Set(names)];
+    // Just use the actual base filename - keep it simple!
+    return [baseName];
   };
 
-  // Try to find the file with different patterns
+  // Try to find files with the backend's naming pattern
   const tryDownloadVariants = async (fileType, setUrl, setFoundFilename) => {
     const now = new Date();
-    const possibleBaseNames = generatePossibleBaseNames();
     
-    console.log(`🔍 Searching for ${fileType.toUpperCase()} file with base names:`, possibleBaseNames);
+    console.log(`🔍 Searching for ${fileType.toUpperCase()} file`);
     console.log(`📁 Original file: ${originalName}`);
     console.log(`📝 Base name: ${baseName}`);
     
-    // First, try the exact timestamp from your example if it matches
-    const knownTimestamp = '2025-08-30T23-58-50-446Z';
-    if (baseName === 'adsfsfe123') {
-      const exactFileName = `extracted-text/adsfsfe123_extracted-claude-maritime-data-${knownTimestamp}.json`;
-      console.log(`🎯 Trying exact known file: ${exactFileName}`);
+    // Try different timestamps going back 2 hours
+    for (let i = 0; i < 120; i++) {
+      const testTime = new Date(now.getTime() - (i * 60000));
+      const timestamp = testTime.toISOString().replace(/:/g, '-').replace(/\./g, '-').slice(0, -1) + 'Z';
+      
+      let fileName;
+      if (fileType === 'json') {
+        fileName = `extracted-text/${baseName}_extracted-claude-maritime-data-${timestamp}.json`;
+      } else {
+        fileName = `extracted-text/${baseName}_extracted-claude-events-${timestamp}.csv`;
+      }
       
       try {
         const res = await fetch("https://sof-event-extractor-backend-production.up.railway.app/download-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: exactFileName }),
+          body: JSON.stringify({ fileName }),
         });
         
         if (res.ok) {
-          const downloadResponse = await res.json();
-          if (downloadResponse.ready && downloadResponse.downloadURL) {
-            console.log(`✅ FOUND EXACT FILE: ${exactFileName}`);
-            setUrl(downloadResponse.downloadURL);
-            setFoundFilename(exactFileName);
-            return true;
-          }
-        }
-      } catch (error) {
-        console.log(`❌ Exact file not found: ${error.message}`);
-      }
-    }
-    
-    // Try different timestamp patterns (last 120 minutes = 2 hours)
-    for (let i = 0; i < 120; i++) {
-      const testTime = new Date(now.getTime() - (i * 60000)); // Go back minute by minute
-      const timestamp = testTime.toISOString().replace(/:/g, '-').replace(/\./g, '-').slice(0, -1) + 'Z';
-      
-      // Try each possible base name
-      for (const possibleBase of possibleBaseNames) {
-        let fileName;
-        if (fileType === 'json') {
-          fileName = `extracted-text/${possibleBase}_extracted-claude-maritime-data-${timestamp}.json`;
-        } else {
-          fileName = `extracted-text/${possibleBase}_extracted-claude-events-${timestamp}.csv`;
-        }
-        
-        try {
-          const res = await fetch("https://sof-event-extractor-backend-production.up.railway.app/download-url", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fileName }),
-          });
-          
-          if (!res.ok) {
-            // Only log every 10th attempt to reduce console spam
-            if (i % 10 === 0) {
-              console.log(`❌ Not found: ${fileName} (${res.status})`);
-            }
-            continue;
-          }
-
           const downloadResponse = await res.json();
           
           if (downloadResponse.ready && downloadResponse.downloadURL) {
@@ -195,21 +92,23 @@ const Download = () => {
             console.log(`✅ Download URL:`, downloadResponse.downloadURL);
             setUrl(downloadResponse.downloadURL);
             setFoundFilename(fileName);
-            return true; // Found the file
+            return true;
           } else if (downloadResponse.ready === false) {
             console.log(`⏳ File exists but not ready: ${fileName}`);
           }
-        } catch (error) {
-          // Only log errors occasionally to reduce spam
-          if (i % 20 === 0) {
-            console.log(`🔍 Network error for ${fileName}: ${error.message}`);
-          }
-          continue;
         }
+      } catch (error) {
+        continue;
+      }
+      
+      // Log progress every 10 minutes of search
+      if (i > 0 && i % 10 === 0) {
+        console.log(`🔍 Still searching... checked ${i} minutes back`);
       }
     }
     
-    return false; // File not found
+    console.log(`❌ No ${fileType.toUpperCase()} file found after searching 2 hours back`);
+    return false;
   };
 
   // Check for JSON file
@@ -223,12 +122,12 @@ const Download = () => {
       );
       
       if (!found) {
-        console.log("⏰ JSON file not found, retrying in 5 seconds...");
-        retryTimeout = setTimeout(checkDownload, 5000);
+        console.log("⏰ JSON file not ready yet, retrying in 10 seconds...");
+        retryTimeout = setTimeout(checkDownload, 10000);
       }
     };
     
-    // Start checking after upload completes
+    // Wait 3 seconds after upload before starting search
     const initialTimeout = setTimeout(checkDownload, 3000);
     
     return () => {
@@ -248,12 +147,12 @@ const Download = () => {
       );
       
       if (!found) {
-        console.log("⏰ CSV file not found, retrying in 5 seconds...");
-        retryTimeout = setTimeout(checkDownload, 5000);
+        console.log("⏰ CSV file not ready yet, retrying in 10 seconds...");
+        retryTimeout = setTimeout(checkDownload, 10000);
       }
     };
     
-    // Start checking after upload completes
+    // Wait 3 seconds after upload before starting search
     const initialTimeout = setTimeout(checkDownload, 3000);
     
     return () => {
@@ -271,7 +170,7 @@ const Download = () => {
       {/* Debug info */}
       <div className="mb-4 text-sm text-gray-600 text-center max-w-2xl">
         <p className="mb-2">Processing file: <span className="font-mono text-xs">{originalName}</span></p>
-        <p>Searching with multiple base name patterns...</p>
+        <p>Looking for processed files...</p>
       </div>
 
       {(downloadUrl || CSVdownloadUrl) ? (
@@ -297,8 +196,8 @@ const Download = () => {
           
           {/* Show found filenames */}
           <div className="text-xs text-gray-500 max-w-2xl break-all">
-            {foundFilenames.json && <p>JSON: {foundFilenames.json}</p>}
-            {foundFilenames.csv && <p>CSV: {foundFilenames.csv}</p>}
+            {foundFilenames.json && <p>Found JSON: {foundFilenames.json}</p>}
+            {foundFilenames.csv && <p>Found CSV: {foundFilenames.csv}</p>}
           </div>
         </div>
       ) : (
@@ -317,9 +216,9 @@ const Download = () => {
           </div>
           
           <div className="text-xs text-gray-500">
-            <p className="mb-2">Looking for patterns like:</p>
-            <p className="font-mono break-all">[filename]_extracted-claude-maritime-data-[timestamp].json</p>
-            <p className="font-mono break-all">[filename]_extracted-claude-events-[timestamp].csv</p>
+            <p className="mb-2">Expected file patterns:</p>
+            <p className="font-mono break-all">{baseName}_extracted-claude-maritime-data-[timestamp].json</p>
+            <p className="font-mono break-all">{baseName}_extracted-claude-events-[timestamp].csv</p>
             <p className="mt-2 text-gray-400">⚠️ Check console for detailed search progress</p>
           </div>
         </div>
